@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#030510" />
+    <title>Orrery — Solar System Simulator</title>
+  </head>
+  <body>
+    <main id="app">
+      <canvas id="scene" aria-label="Interactive 3D solar system"></canvas>
+
+      <header class="topbar glass">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <div><strong>ORRERY</strong><small>Solar system simulator</small></div>
+        </div>
+        <div class="time-readout">
+          <span>SIMULATION TIME</span>
+          <time id="sim-time">—</time>
+        </div>
+        <div class="controls" aria-label="Simulation controls">
+          <button id="reset" class="icon-button" title="Reset simulation" aria-label="Reset simulation">↺</button>
+          <button id="play-pause" class="primary-button" aria-label="Pause simulation"><span id="play-icon">Ⅱ</span><span id="play-label">PAUSE</span></button>
+          <label class="select-wrap">SPEED
+            <select id="speed" aria-label="Simulation speed">
+              <option value="1">1×</option>
+              <option value="60" selected>60×</option>
+              <option value="1000">1,000×</option>
+              <option value="10000">10,000×</option>
+            </select>
+          </label>
+        </div>
+      </header>
+
+      <nav class="planet-nav glass" aria-label="Select a planet">
+        <span>EXPLORE</span>
+        <div id="planet-buttons"></div>
+      </nav>
+
+      <div class="mode-switch glass" role="group" aria-label="Camera mode">
+        <button class="mode active" data-mode="fixed">FIXED</button>
+        <button class="mode" data-mode="cinematic">CINEMATIC</button>
+      </div>
+
+      <aside id="planet-panel" class="planet-panel glass" aria-live="polite" aria-hidden="true">
+        <button id="close-panel" aria-label="Close planet details">×</button>
+        <div class="panel-heading">
+          <div id="planet-icon" class="planet-icon"></div>
+          <div><span id="planet-kicker">PLANET 03</span><h1 id="planet-name">Earth</h1></div>
+        </div>
+        <p id="planet-overview"></p>
+        <dl id="planet-stats"></dl>
+        <div class="fact"><span>NOTABLE</span><p id="planet-fact"></p></div>
+      </aside>
+
+      <div id="tooltip" role="tooltip"></div>
+      <footer>
+        <span><i class="mouse-icon">↔</i> DRAG TO ORBIT</span>
+        <span>SCROLL TO ZOOM</span>
+        <span class="scale-note">TIME 60× · SIZES &amp; DISTANCES VISUALLY ADJUSTED — NOT TO SCALE</span>
+      </footer>
+    </main>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

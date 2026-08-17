@@ -1,0 +1,67 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap');
+
+:root { color-scheme: dark; font-family: Manrope, system-ui, sans-serif; background: #030510; color: #f5f7ff; }
+* { box-sizing: border-box; }
+html, body, #app { width: 100%; height: 100%; margin: 0; overflow: hidden; }
+body { background: radial-gradient(circle at 50% 50%, #11172a, #030510 58%); }
+button, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+#scene { position: fixed; inset: 0; width: 100%; height: 100%; outline: none; }
+.glass { background: linear-gradient(135deg, rgba(16, 21, 38, .72), rgba(8, 11, 22, .48)); border: 1px solid rgba(164, 185, 232, .15); box-shadow: 0 20px 50px rgba(0,0,0,.22); backdrop-filter: blur(18px); }
+.topbar { position: fixed; z-index: 5; top: 20px; left: 22px; right: 22px; height: 72px; border-radius: 14px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 18px; }
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand-mark { width: 28px; height: 28px; border: 1px solid #9db4e8; border-radius: 50%; position: relative; box-shadow: inset 0 0 0 6px rgba(157,180,232,.08); }
+.brand-mark:after { content: ''; position: absolute; width: 7px; height: 7px; border-radius: 50%; background: #ffbd61; top: 9px; left: 9px; box-shadow: 0 0 12px #ff8f3d; }
+.brand strong { display:block; font-size: 13px; letter-spacing: .26em; }
+.brand small { display:block; color:#7f8ba6; font: 9px DM Mono; letter-spacing:.12em; margin-top:3px; text-transform:uppercase; }
+.time-readout { text-align:center; }
+.time-readout span, .select-wrap, .planet-nav>span { color:#79869f; font: 9px DM Mono; letter-spacing:.16em; }
+.time-readout time { display:block; margin-top: 4px; font: 13px DM Mono; letter-spacing:.06em; color:#dce5f7; }
+.controls { justify-self:end; display:flex; align-items:center; gap:8px; }
+.icon-button, .primary-button, select { border:1px solid rgba(166,187,230,.19); background:rgba(12,17,31,.75); border-radius:8px; height:38px; }
+.icon-button { width:38px; font-size:18px; }
+.primary-button { padding:0 15px; display:flex; align-items:center; gap:8px; color:#07101f; background:#b9caf2; font:700 10px DM Mono; letter-spacing:.1em; }
+.select-wrap { display:flex; align-items:center; gap:7px; padding-left:9px; }
+select { padding:0 8px; outline:none; font:10px DM Mono; }
+.planet-nav { position:fixed; z-index:5; left:22px; top:108px; width:128px; padding:16px 12px; border-radius:14px; }
+.planet-nav>span { display:block; margin:0 0 9px 6px; }
+#planet-buttons { display:flex; flex-direction:column; gap:3px; }
+.planet-button { border:0; background:transparent; color:#8793aa; border-radius:8px; padding:8px 7px; text-align:left; font:500 10px DM Mono; letter-spacing:.05em; display:flex; gap:9px; align-items:center; transition:.2s; }
+.planet-button:hover, .planet-button.active { color:#fff; background:rgba(156,181,232,.11); }
+.planet-dot { width:8px; height:8px; border-radius:50%; flex:none; box-shadow:0 0 7px currentColor; }
+.mode-switch { position:fixed; z-index:5; left:22px; bottom:42px; padding:4px; border-radius:9px; display:flex; }
+.mode { background:transparent; border:0; border-radius:6px; padding:8px 12px; color:#71809a; font:9px DM Mono; letter-spacing:.1em; }
+.mode.active { background:#bed0f7; color:#08101f; }
+.planet-panel { position:fixed; z-index:6; right:22px; bottom:52px; width:min(355px, calc(100vw - 44px)); max-height:calc(100vh - 165px); overflow:auto; border-radius:18px; padding:22px; transform:translateX(calc(100% + 40px)); opacity:0; transition:transform .45s cubic-bezier(.2,.8,.2,1), opacity .35s; pointer-events:none; }
+.planet-panel.open { transform:translateX(0); opacity:1; pointer-events:auto; }
+#close-panel { position:absolute; right:14px; top:12px; border:0; background:transparent; color:#738099; font-size:23px; }
+.panel-heading { display:flex; align-items:center; gap:15px; }
+.planet-icon { width:58px; height:58px; border-radius:50%; background:var(--planet-color); box-shadow:inset -16px -7px 20px rgba(0,0,0,.45), 0 0 24px color-mix(in srgb, var(--planet-color), transparent 55%); }
+#planet-kicker { color:#76839d; font:9px DM Mono; letter-spacing:.13em; }
+h1 { font-size:25px; margin:3px 0 0; letter-spacing:-.02em; }
+#planet-overview { color:#aeb8cc; font-size:12px; line-height:1.65; margin:18px 0; }
+dl { display:grid; grid-template-columns:1fr 1fr; border-top:1px solid rgba(164,185,232,.12); margin:0; }
+.stat { padding:12px 0; border-bottom:1px solid rgba(164,185,232,.12); }
+.stat:nth-child(odd) { border-right:1px solid rgba(164,185,232,.12); }
+dt { color:#6f7c95; font:8px DM Mono; letter-spacing:.12em; margin-bottom:5px; }
+dd { margin:0; color:#e8edfa; font:11px DM Mono; }
+.fact { margin-top:16px; padding:13px; border:1px solid rgba(164,185,232,.12); border-radius:10px; background:rgba(114,139,192,.06); }
+.fact span { color:#7e8aa3; font:8px DM Mono; letter-spacing:.13em; }
+.fact p { font-size:11px; line-height:1.5; color:#c7d0e2; margin:6px 0 0; }
+#tooltip { position:fixed; z-index:10; pointer-events:none; opacity:0; transform:translate(-50%, -130%); background:rgba(5,8,17,.88); border:1px solid rgba(180,200,240,.24); border-radius:6px; padding:5px 8px; font:9px DM Mono; letter-spacing:.08em; transition:opacity .15s; }
+footer { position:fixed; z-index:4; bottom:14px; left:170px; right:22px; display:flex; gap:24px; color:#65728b; font:8px DM Mono; letter-spacing:.1em; pointer-events:none; }
+.scale-note { margin-left:auto; }
+@media (max-width: 800px) {
+  .topbar { grid-template-columns:1fr auto; height:64px; }
+  .time-readout { display:none; }
+  .brand small, .select-wrap { display:none; }
+  .planet-nav { top:auto; bottom:42px; width:auto; right:22px; padding:8px; overflow-x:auto; }
+  .planet-nav>span { display:none; }
+  #planet-buttons { flex-direction:row; }
+  .planet-button { font-size:0; padding:8px; }
+  .planet-dot { width:10px; height:10px; }
+  .mode-switch { bottom:100px; }
+  .planet-panel { bottom:145px; max-height:48vh; }
+  footer { left:22px; }
+  footer span:not(.scale-note) { display:none; }
+}
