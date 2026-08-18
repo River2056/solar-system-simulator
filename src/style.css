@@ -60,9 +60,13 @@ dd { margin:0; color:#e8edfa; font:11px DM Mono; }
 footer { position:fixed; z-index:4; bottom:14px; left:170px; right:22px; display:flex; gap:24px; color:#65728b; font:8px DM Mono; letter-spacing:.1em; pointer-events:none; }
 .scale-note { margin-left:auto; }
 @media (max-width: 800px) {
-  .topbar { grid-template-columns:1fr auto; height:64px; }
+  .topbar { grid-template-columns:minmax(0, 1fr) auto; height:64px; padding:0 10px; }
   .time-readout { display:none; }
-  .brand small, .select-wrap { display:none; }
+  .brand small { display:none; }
+  .controls { gap:5px; }
+  .select-wrap { padding-left:0; gap:0; font-size:0; }
+  .select-wrap select { width:60px; height:34px; padding:0 4px; }
+  .icon-button, .primary-button { height:34px; }
   .planet-nav { top:auto; bottom:42px; width:auto; right:22px; padding:8px; overflow-x:auto; }
   .planet-nav>span { display:none; }
   #planet-buttons { flex-direction:row; }
@@ -82,4 +86,12 @@ footer { position:fixed; z-index:4; bottom:14px; left:170px; right:22px; display
   .planet-panel.minimized #toggle-panel { top:50%; right:7px; }
   footer { left:22px; }
   footer span:not(.scale-note) { display:none; }
+}
+@media (max-width: 420px) {
+  .brand { gap:8px; }
+  .brand-mark { width:24px; height:24px; }
+  .brand-mark:after { top:7px; left:7px; }
+  .brand strong { font-size:11px; letter-spacing:.2em; }
+  .icon-button, .primary-button { width:34px; padding:0; justify-content:center; }
+  #play-label { display:none; }
 }
