@@ -3,6 +3,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { orbitalAngle, orbitalPosition, advanceSimulation } from './orbits.js';
 import { MOONS_BY_PLANET, moonAngularVelocity, advanceSynchronousMoon } from './moons.js';
 import { MOON_APPEARANCES, createMoonTexture, createMoonGeometry, createMoonMaterial } from './moon-visuals.js';
+import { updateTrackedCamera } from './camera.js';
 import './style.css';
 
 const PLANETS = [
@@ -287,10 +288,10 @@ function animate() {
     controls.target.lerpVectors(transition.fromTarget,transition.toTarget,t);
     if(raw>=1){ const done=transition.onDone; transition=null; done?.(); }
   } else if(selected && targetWorld) {
-    const delta=targetWorld.clone().sub(controls.target); controls.target.lerp(targetWorld,1-Math.exp(-dt*5)); camera.position.add(delta.multiplyScalar(1-Math.exp(-dt*5)));
+    updateTrackedCamera(camera.position,controls.target,targetWorld,dt,cameraMode==='cinematic');
   }
-  if(cameraMode==='cinematic' && !transition) {
-    const target=selected&&targetWorld?targetWorld:new THREE.Vector3();
+  if(cameraMode==='cinematic' && !transition && !selected) {
+    const target=new THREE.Vector3();
     const offset=camera.position.clone().sub(controls.target); offset.applyAxisAngle(new THREE.Vector3(0,1,0),dt*.055);
     camera.position.copy(target).add(offset); controls.target.lerp(target,1-Math.exp(-dt*4));
   }
