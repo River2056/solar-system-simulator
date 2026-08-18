@@ -221,13 +221,13 @@ function populatePanel(p) {
 function pick(event, isClick=false) {
   const r=canvas.getBoundingClientRect(); pointer.x=((event.clientX-r.left)/r.width)*2-1; pointer.y=-((event.clientY-r.top)/r.height)*2+1;
   raycaster.setFromCamera(pointer,camera); const hit=raycaster.intersectObjects(clickable,false)[0]; const p=hit?.object.userData.planet || null;
-  if (isClick) { p ? selectPlanet(p) : deselect(); return; }
+  if (isClick) { if (p) selectPlanet(p); return; }
   if (hover!==p) { hover=p; canvas.style.cursor=p?'pointer':'grab'; clickable.forEach(m=>m.userData.hoverTarget.scale.setScalar(m.userData.planet===p?1.08:1)); }
   if (p) { tooltip.textContent=p.name.toUpperCase(); tooltip.style.left=`${event.clientX}px`; tooltip.style.top=`${event.clientY}px`; tooltip.style.opacity=1; } else tooltip.style.opacity=0;
 }
 canvas.addEventListener('pointermove',e=>pick(e));
 canvas.addEventListener('click',e=>pick(e,true));
-document.querySelector('#close-panel').addEventListener('click',deselect);
+document.querySelector('#back').addEventListener('click',deselect);
 document.querySelector('#toggle-panel').addEventListener('click',e=>{e.stopPropagation(); setPanelMinimized(!panel.classList.contains('minimized'));});
 panel.addEventListener('click',()=>{if(panel.classList.contains('minimized')) setPanelMinimized(false);});
 
