@@ -1,8 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import * as THREE from 'three';
 import { orbitalAngle, orbitalPosition, advanceSimulation, TAU } from '../src/orbits.js';
 import { MOONS_BY_PLANET, moonAngularVelocity, advanceSynchronousMoon } from '../src/moons.js';
-import { MOON_APPEARANCES, createMoonGeometry } from '../src/moon-visuals.js';
+import { MOON_APPEARANCES, createMoonGeometry, createMoonMaterial } from '../src/moon-visuals.js';
 
 test('one orbital period completes one revolution', () => {
   assert.ok(Math.abs(orbitalAngle(365.25 * 86400, 365.25)) < 1e-10);
@@ -59,4 +60,16 @@ test('irregular moons use distorted geometry while major icy moons remain smooth
   assert.notEqual(phobos.type,europa.type);
   assert.deepEqual(MOON_APPEARANCES.Phobos.shape,[1,.81,.67]);
   assert.equal(europa.type,'SphereGeometry');
+});
+
+test('color-only features are not reused as artificial topography', () => {
+  const texture=new THREE.Texture();
+  const io=createMoonMaterial('Io',texture);
+  const titan=createMoonMaterial('Titan',texture);
+  const phobos=createMoonMaterial('Phobos',texture);
+
+  assert.equal(io.bumpMap,null);
+  assert.equal(titan.bumpMap,null);
+  assert.equal(phobos.bumpMap,texture);
+  assert.equal(phobos.bumpScale,.04);
 });
