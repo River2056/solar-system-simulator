@@ -1,0 +1,11 @@
+Solar System Scope textures
+===========================
+
+Files in this directory are adapted from the Solar System Scope texture pack:
+https://www.solarsystemscope.com/textures/
+
+The source textures are based on NASA elevation and imagery data and are distributed
+under the Creative Commons Attribution 4.0 International license (CC BY 4.0):
+https://creativecommons.org/licenses/by/4.0/
+
+Downloaded at 2K resolution and renamed for use by this simulator.
