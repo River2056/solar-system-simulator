@@ -172,7 +172,7 @@ PLANETS.forEach((p,index) => {
 const nav=document.querySelector('#planet-buttons');
 BODIES.forEach(p => { const b=document.createElement('button'); b.className='planet-button'; b.innerHTML=`<i class="planet-dot" style="background:${p.color};color:${p.color}"></i>${p.name.toUpperCase()}`; b.addEventListener('click',()=>selectPlanet(p)); nav.appendChild(b); p.button=b; });
 
-let playing=true, speed=60, simMs=Date.now(), orbitEpochMs=simMs, selected=null, cameraMode='fixed';
+let playing=true, speed=60, simMs=Date.now(), orbitEpochMs=simMs, selected=null, cameraMode='cinematic';
 let transition=null, hover=null;
 const clock=new THREE.Clock(), raycaster=new THREE.Raycaster(), pointer=new THREE.Vector2();
 const panel=document.querySelector('#planet-panel'), tooltip=document.querySelector('#tooltip');
