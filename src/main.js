@@ -190,7 +190,7 @@ function selectPlanet(p) {
   dir.y=.18; dir.normalize();
   const distance=Math.max(p.radius*7,18);
   startCameraTransition(world.clone().add(dir.multiplyScalar(distance)).add(new THREE.Vector3(0,p.radius*.35,0)),world,1.15);
-  populatePanel(p); setPanelMinimized(false); panel.classList.add('open'); panel.setAttribute('aria-hidden','false');
+  populatePanel(p); setPanelMinimized(true); panel.classList.add('open'); panel.setAttribute('aria-hidden','false');
 }
 function deselect() {
   if (!selected) return;

@@ -50,8 +50,9 @@ dd { margin:0; color:#e8edfa; font:11px DM Mono; }
 .fact { margin-top:16px; padding:13px; border:1px solid rgba(164,185,232,.12); border-radius:10px; background:rgba(114,139,192,.06); }
 .fact span { color:#7e8aa3; font:8px DM Mono; letter-spacing:.13em; }
 .fact p { font-size:11px; line-height:1.5; color:#c7d0e2; margin:6px 0 0; }
-.planet-panel.minimized { top:auto; bottom:52px; width:200px; max-height:none; overflow:hidden; padding:10px; border-radius:12px; transform:none; transition:opacity .2s; cursor:pointer; }
-.planet-panel.minimized #back, .planet-panel.minimized #planet-overview, .planet-panel.minimized #planet-stats, .planet-panel.minimized .fact { display:none; }
+.planet-panel.minimized { top:auto; bottom:52px; width:200px; max-height:none; overflow:visible; padding:10px; border-radius:12px; transform:none; transition:opacity .2s; cursor:pointer; }
+.planet-panel.minimized #planet-overview, .planet-panel.minimized #planet-stats, .planet-panel.minimized .fact { display:none; }
+.planet-panel.minimized #back { position:absolute; top:50%; right:calc(100% + 8px); margin:0; padding:10px 12px; transform:translateY(-50%); border:1px solid rgba(166,187,230,.19); border-radius:9px; background:rgba(12,17,31,.75); white-space:nowrap; }
 .planet-panel.minimized #toggle-panel { top:50%; right:8px; transform:translateY(-50%); }
 .planet-panel.minimized .panel-heading { gap:9px; padding-right:28px; }
 .planet-panel.minimized .planet-icon { width:32px; height:32px; }
