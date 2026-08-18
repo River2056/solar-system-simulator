@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { orbitalAngle, orbitalPosition, advanceSimulation } from './orbits.js';
+import { MOONS_BY_PLANET, moonAngularVelocity, advanceSynchronousMoon } from './moons.js';
 import './style.css';
 
 const PLANETS = [
@@ -126,7 +127,7 @@ PLANETS.forEach((p,index) => {
   const mesh = new THREE.Mesh(new THREE.SphereGeometry(p.radius,64,48), new THREE.MeshStandardMaterial({map:texture,bumpMap:texture,bumpScale:p.name==='Mercury'||p.name==='Mars'?.12:.035,roughness:['Earth','Neptune'].includes(p.name)?.62:.84,metalness:0}));
   const tilts={Mercury:.034,Venus:.05,Earth:.409,Mars:.44,Jupiter:.054,Saturn:.466,Uranus:1.706,Neptune:.494};
   mesh.rotation.z=tilts[p.name];
-  group.add(mesh); p.mesh=mesh; p.detailLayers=[]; p.moonPivots=[];
+  group.add(mesh); p.mesh=mesh; p.detailLayers=[]; p.moonSystems=[];
   if(p.name==='Earth'){
     const cloudTexture=loadTexture('earth_clouds.jpg');
     const clouds=new THREE.Mesh(new THREE.SphereGeometry(p.radius*1.018,64,48),new THREE.MeshStandardMaterial({map:cloudTexture,alphaMap:cloudTexture,transparent:true,opacity:.72,depthWrite:false,roughness:1}));
@@ -156,13 +157,24 @@ PLANETS.forEach((p,index) => {
     const ring=new THREE.Mesh(ringGeometry,ringMaterial);
     ring.rotation.x=Math.PI/2; ring.rotation.y=p.name==='Saturn'?.16:1.45; group.add(ring); p.ring=ring; p.detailLayers.push(ring);
   }
-  const moonCounts={Earth:1,Mars:2,Jupiter:4,Saturn:3,Uranus:2,Neptune:1};
-  const visibleMoons=moonCounts[p.name]||0;
-  for(let m=0;m<visibleMoons;m++){
-    const pivot=new THREE.Group(); const moonRadius=Math.max(.16,p.radius*(p.name==='Earth'?.19:.055+seeded(m)*.025));
+  const visibleMoons=MOONS_BY_PLANET[p.name]||[];
+  visibleMoons.forEach((moonData,m)=>{
+    const orbitPlane=new THREE.Group();
+    orbitPlane.rotation.z=THREE.MathUtils.degToRad(moonData.eclipticInclinationDeg);
+    const pivot=new THREE.Group();
+    const anchor=new THREE.Group();
+    const orientation=new THREE.Group();
+    const moonRadius=Math.max(.16,p.radius*(p.name==='Earth'?.19:.055+seeded(m)*.025));
     const moon=new THREE.Mesh(new THREE.SphereGeometry(moonRadius,20,14),new THREE.MeshStandardMaterial({map:moonTexture,color:m===0&&p.name==='Jupiter'?0xd6c19a:0xaaa8a1,roughness:.95,bumpMap:moonTexture,bumpScale:.03}));
-    moon.position.x=p.radius*(1.7+m*.42)+.8; pivot.rotation.x=(seeded(index*7+m)-.5)*.28; pivot.rotation.y=m*1.8+seeded(index+m)*2; pivot.add(moon); group.add(pivot); p.moonPivots.push(pivot);
-  }
+    const initialAngle=m*1.8+seeded(index+m)*2;
+    anchor.position.x=p.radius*(1.7+m*.42)+.8;
+    moon.rotation.y=initialAngle;
+    moon.userData.name=moonData.name;
+    pivot.rotation.y=initialAngle;
+    orientation.rotation.y=-initialAngle;
+    orientation.add(moon); anchor.add(orientation); pivot.add(anchor); orbitPlane.add(pivot); group.add(orbitPlane);
+    p.moonSystems.push({pivot,orientation,moon,angularVelocity:moonAngularVelocity(moonData.orbitPeriodDays,moonData.direction)});
+  });
   const curve = new THREE.EllipseCurve(0,0,p.orbit,p.orbit,0,Math.PI*2,false,0);
   const pts=curve.getPoints(180).map(v=>new THREE.Vector3(v.x,0,v.y));
   const orbit=new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:0x445170,transparent:true,opacity:.28}));
@@ -247,7 +259,7 @@ function animate() {
     if(playing) {
       p.mesh.rotation.y += dt * (.09 + i*.008);
       if(p.clouds) p.clouds.rotation.y += dt*(p.name==='Venus'?.055:.12);
-      p.moonPivots.forEach((pivot,m)=>{ pivot.rotation.y+=dt*(.18+m*.055); });
+      p.moonSystems.forEach(system=>advanceSynchronousMoon(system,dt));
     }
   });
   sun.rotation.y+=dt*.035;
