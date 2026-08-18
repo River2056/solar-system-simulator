@@ -1,0 +1,21 @@
+{
+  "name": "Orrery — Solar System Simulator",
+  "short_name": "Orrery",
+  "description": "An interactive 3D solar system simulator.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#030510",
+  "theme_color": "#030510",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
