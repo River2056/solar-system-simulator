@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { orbitalAngle, orbitalPosition, advanceSimulation } from './orbits.js';
 import { MOONS_BY_PLANET, moonAngularVelocity, advanceSynchronousMoon } from './moons.js';
+import { MOON_APPEARANCES, createMoonTexture, createMoonGeometry, createMoonMaterial } from './moon-visuals.js';
 import './style.css';
 
 const PLANETS = [
@@ -119,7 +120,11 @@ const clickable=[];
 const sunHit = new THREE.Mesh(new THREE.SphereGeometry(10.4,32,24),new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}));
 sunHit.userData.planet=SUN; sunHit.userData.hoverTarget=sun; scene.add(sunHit); clickable.push(sunHit);
 const planetTextureNames={Mercury:'mercury.jpg',Venus:'venus_atmosphere.jpg',Earth:'earth_daymap.jpg',Mars:'mars.jpg',Jupiter:'jupiter.jpg',Saturn:'saturn.jpg',Uranus:'uranus.jpg',Neptune:'neptune.jpg'};
-const moonTexture=loadTexture('moon.jpg');
+const moonTextures=new Map([['Moon',loadTexture('moon.jpg')]]);
+function getMoonTexture(name){
+  if(!moonTextures.has(name)) moonTextures.set(name,createMoonTexture(name));
+  return moonTextures.get(name);
+}
 PLANETS.forEach((p,index) => {
   p.initialAngle = index * 1.73 + .5;
   const group = new THREE.Group(); scene.add(group); p.group=group;
@@ -165,11 +170,17 @@ PLANETS.forEach((p,index) => {
     const anchor=new THREE.Group();
     const orientation=new THREE.Group();
     const moonRadius=Math.max(.16,p.radius*(p.name==='Earth'?.19:.055+seeded(m)*.025));
-    const moon=new THREE.Mesh(new THREE.SphereGeometry(moonRadius,20,14),new THREE.MeshStandardMaterial({map:moonTexture,color:m===0&&p.name==='Jupiter'?0xd6c19a:0xaaa8a1,roughness:.95,bumpMap:moonTexture,bumpScale:.03}));
+    const moonTexture=getMoonTexture(moonData.name);
+    const moon=new THREE.Mesh(createMoonGeometry(moonData.name,moonRadius),createMoonMaterial(moonData.name,moonTexture));
     const initialAngle=m*1.8+seeded(index+m)*2;
     anchor.position.x=p.radius*(1.7+m*.42)+.8;
     moon.rotation.y=initialAngle;
     moon.userData.name=moonData.name;
+    const moonAppearance=MOON_APPEARANCES[moonData.name];
+    if(moonAppearance.atmosphere){
+      const atmosphere=new THREE.Mesh(createMoonGeometry(moonData.name,moonRadius*1.07),new THREE.MeshBasicMaterial({color:moonAppearance.atmosphere,transparent:true,opacity:.2,depthWrite:false,side:THREE.BackSide}));
+      moon.add(atmosphere);
+    }
     pivot.rotation.y=initialAngle;
     orientation.rotation.y=-initialAngle;
     orientation.add(moon); anchor.add(orientation); pivot.add(anchor); orbitPlane.add(pivot); group.add(orbitPlane);

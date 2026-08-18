@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { orbitalAngle, orbitalPosition, advanceSimulation, TAU } from '../src/orbits.js';
 import { MOONS_BY_PLANET, moonAngularVelocity, advanceSynchronousMoon } from '../src/moons.js';
+import { MOON_APPEARANCES, createMoonGeometry } from '../src/moon-visuals.js';
 
 test('one orbital period completes one revolution', () => {
   assert.ok(Math.abs(orbitalAngle(365.25 * 86400, 365.25)) < 1e-10);
@@ -40,4 +41,22 @@ test('a synchronous moon spins once in the same direction as it orbits', () => {
   assert.equal(system.pivot.rotation.y,0.9);
   assert.equal(system.orientation.rotation.y,-0.9);
   assert.equal(system.moon.rotation.y,0.9);
+});
+
+test('every rendered moon has a dedicated appearance profile', () => {
+  const renderedMoons=Object.values(MOONS_BY_PLANET).flat().map(moon=>moon.name);
+
+  assert.deepEqual(Object.keys(MOON_APPEARANCES).sort(),renderedMoons.sort());
+  assert.equal(MOON_APPEARANCES.Phobos.style,'rocky');
+  assert.equal(MOON_APPEARANCES.Io.style,'volcanic');
+  assert.equal(MOON_APPEARANCES.Titan.atmosphere,'#e8903b');
+});
+
+test('irregular moons use distorted geometry while major icy moons remain smooth', () => {
+  const phobos=createMoonGeometry('Phobos',1);
+  const europa=createMoonGeometry('Europa',1);
+
+  assert.notEqual(phobos.type,europa.type);
+  assert.deepEqual(MOON_APPEARANCES.Phobos.shape,[1,.81,.67]);
+  assert.equal(europa.type,'SphereGeometry');
 });
