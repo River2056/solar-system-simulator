@@ -75,7 +75,7 @@ footer { position:fixed; z-index:4; bottom:14px; left:170px; right:22px; display
   .planet-button { font-size:0; padding:8px; }
   .planet-dot { width:10px; height:10px; }
   .mode-switch { bottom:100px; }
-  .planet-panel { top:100px; right:22px; bottom:auto; width:min(280px, calc(100vw - 44px)); max-height:min(32dvh, 220px); overflow-y:auto; overscroll-behavior:contain; padding:14px; border-radius:14px; }
+  .planet-panel { top:auto; right:22px; bottom:100px; width:min(280px, calc(100vw - 44px)); max-height:min(32dvh, 220px); overflow-y:auto; overscroll-behavior:contain; padding:14px; border-radius:14px; }
   #toggle-panel { right:9px; top:6px; font-size:20px; }
   #back { margin-bottom:10px; }
   .panel-heading { gap:11px; padding-right:28px; }
