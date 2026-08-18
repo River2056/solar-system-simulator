@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { orbitalAngle, orbitalPosition, advanceSimulation, TAU } from '../src/orbits.js';
 import { MOONS_BY_PLANET, moonAngularVelocity, advanceSynchronousMoon } from '../src/moons.js';
 import { MOON_APPEARANCES, createMoonGeometry, createMoonMaterial } from '../src/moon-visuals.js';
+import { orientPlanet, advancePlanetRotation } from '../src/planet-rotation.js';
 
 test('one orbital period completes one revolution', () => {
   assert.ok(Math.abs(orbitalAngle(365.25 * 86400, 365.25)) < 1e-10);
@@ -18,6 +19,23 @@ test('quarter orbit position is on positive z axis', () => {
 test('simulation advances at selected speed and pauses', () => {
   assert.equal(advanceSimulation(0, 60, 60), 3600000);
   assert.equal(advanceSimulation(123, 10, 60, false), 123);
+});
+
+test('Venus and Uranus rotate clockwise around their tilted axes', () => {
+  function worldSpinAxis(name) {
+    const planet=new THREE.Object3D();
+    orientPlanet(planet,name);
+    const before=planet.quaternion.clone();
+    advancePlanetRotation(planet,.001,1);
+    const delta=planet.quaternion.clone().multiply(before.invert()).normalize();
+    const sinHalfAngle=Math.hypot(delta.x,delta.y,delta.z);
+    return new THREE.Vector3(delta.x,delta.y,delta.z).divideScalar(sinHalfAngle);
+  }
+
+  assert.ok(worldSpinAxis('Earth').y>.9);
+  assert.ok(worldSpinAxis('Venus').y<-.9);
+  assert.ok(worldSpinAxis('Uranus').y<0);
+  assert.ok(Math.abs(worldSpinAxis('Uranus').x)>.9);
 });
 
 test('representative moons use their real orbital direction and relative period', () => {

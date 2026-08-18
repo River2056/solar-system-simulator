@@ -4,6 +4,7 @@ import { orbitalAngle, orbitalPosition, advanceSimulation } from './orbits.js';
 import { MOONS_BY_PLANET, moonAngularVelocity, advanceSynchronousMoon } from './moons.js';
 import { MOON_APPEARANCES, createMoonTexture, createMoonGeometry, createMoonMaterial } from './moon-visuals.js';
 import { updateTrackedCamera } from './camera.js';
+import { orientPlanet, advancePlanetRotation } from './planet-rotation.js';
 import './style.css';
 
 const PLANETS = [
@@ -131,13 +132,12 @@ PLANETS.forEach((p,index) => {
   const group = new THREE.Group(); scene.add(group); p.group=group;
   const texture = loadTexture(planetTextureNames[p.name]);
   const mesh = new THREE.Mesh(new THREE.SphereGeometry(p.radius,64,48), new THREE.MeshStandardMaterial({map:texture,bumpMap:texture,bumpScale:p.name==='Mercury'||p.name==='Mars'?.12:.035,roughness:['Earth','Neptune'].includes(p.name)?.62:.84,metalness:0}));
-  const tilts={Mercury:.034,Venus:.05,Earth:.409,Mars:.44,Jupiter:.054,Saturn:.466,Uranus:1.706,Neptune:.494};
-  mesh.rotation.z=tilts[p.name];
+  orientPlanet(mesh,p.name);
   group.add(mesh); p.mesh=mesh; p.detailLayers=[]; p.moonSystems=[];
   if(p.name==='Earth'){
     const cloudTexture=loadTexture('earth_clouds.jpg');
     const clouds=new THREE.Mesh(new THREE.SphereGeometry(p.radius*1.018,64,48),new THREE.MeshStandardMaterial({map:cloudTexture,alphaMap:cloudTexture,transparent:true,opacity:.72,depthWrite:false,roughness:1}));
-    clouds.rotation.z=mesh.rotation.z; group.add(clouds); p.clouds=clouds; p.detailLayers.push(clouds);
+    orientPlanet(clouds,p.name); group.add(clouds); p.clouds=clouds; p.detailLayers.push(clouds);
   }
   if(['Venus','Earth','Uranus','Neptune'].includes(p.name)){
     const atmosphereColors={Venus:0xffce7a,Earth:0x5caeff,Uranus:0x8de5e9,Neptune:0x3f78ff};
@@ -269,8 +269,8 @@ function animate() {
     const angle=orbitalAngle(elapsedSimSeconds,p.period,p.initialAngle), pos=orbitalPosition(p.orbit,angle);
     p.group.position.set(pos.x,0,pos.z);
     if(playing) {
-      p.mesh.rotation.y += dt * (.09 + i*.008);
-      if(p.clouds) p.clouds.rotation.y += dt*(p.name==='Venus'?.055:.12);
+      advancePlanetRotation(p.mesh,dt,.09+i*.008);
+      if(p.clouds) advancePlanetRotation(p.clouds,dt,.12);
       p.moonSystems.forEach(system=>advanceSynchronousMoon(system,dt));
     }
   });
