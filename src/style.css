@@ -34,8 +34,10 @@ select { padding:0 8px; outline:none; font:10px DM Mono; }
 .mode.active { background:#bed0f7; color:#08101f; }
 .planet-panel { position:fixed; z-index:6; right:22px; bottom:52px; width:min(355px, calc(100vw - 44px)); max-height:calc(100vh - 165px); overflow:auto; border-radius:18px; padding:22px; transform:translateX(calc(100% + 40px)); opacity:0; transition:transform .45s cubic-bezier(.2,.8,.2,1), opacity .35s; pointer-events:none; }
 .planet-panel.open { transform:translateX(0); opacity:1; pointer-events:auto; }
-#close-panel { position:absolute; right:14px; top:12px; border:0; background:transparent; color:#738099; font-size:23px; }
-.panel-heading { display:flex; align-items:center; gap:15px; }
+#toggle-panel, #close-panel { position:absolute; top:12px; border:0; background:transparent; color:#738099; font-size:23px; line-height:1; }
+#toggle-panel { right:42px; }
+#close-panel { right:14px; }
+.panel-heading { display:flex; align-items:center; gap:15px; padding-right:58px; }
 .planet-icon { width:58px; height:58px; border-radius:50%; background:var(--planet-color); box-shadow:inset -16px -7px 20px rgba(0,0,0,.45), 0 0 24px color-mix(in srgb, var(--planet-color), transparent 55%); }
 #planet-kicker { color:#76839d; font:9px DM Mono; letter-spacing:.13em; }
 h1 { font-size:25px; margin:3px 0 0; letter-spacing:-.02em; }
@@ -48,6 +50,12 @@ dd { margin:0; color:#e8edfa; font:11px DM Mono; }
 .fact { margin-top:16px; padding:13px; border:1px solid rgba(164,185,232,.12); border-radius:10px; background:rgba(114,139,192,.06); }
 .fact span { color:#7e8aa3; font:8px DM Mono; letter-spacing:.13em; }
 .fact p { font-size:11px; line-height:1.5; color:#c7d0e2; margin:6px 0 0; }
+.planet-panel.minimized { top:auto; bottom:52px; width:200px; max-height:none; overflow:hidden; padding:10px; border-radius:12px; transform:none; transition:opacity .2s; cursor:pointer; }
+.planet-panel.minimized #close-panel, .planet-panel.minimized #planet-overview, .planet-panel.minimized #planet-stats, .planet-panel.minimized .fact { display:none; }
+.planet-panel.minimized #toggle-panel { top:50%; right:8px; transform:translateY(-50%); }
+.planet-panel.minimized .panel-heading { gap:9px; padding-right:28px; }
+.planet-panel.minimized .planet-icon { width:32px; height:32px; }
+.planet-panel.minimized h1 { font-size:14px; }
 #tooltip { position:fixed; z-index:10; pointer-events:none; opacity:0; transform:translate(-50%, -130%); background:rgba(5,8,17,.88); border:1px solid rgba(180,200,240,.24); border-radius:6px; padding:5px 8px; font:9px DM Mono; letter-spacing:.08em; transition:opacity .15s; }
 footer { position:fixed; z-index:4; bottom:14px; left:170px; right:22px; display:flex; gap:24px; color:#65728b; font:8px DM Mono; letter-spacing:.1em; pointer-events:none; }
 .scale-note { margin-left:auto; }
@@ -61,7 +69,17 @@ footer { position:fixed; z-index:4; bottom:14px; left:170px; right:22px; display
   .planet-button { font-size:0; padding:8px; }
   .planet-dot { width:10px; height:10px; }
   .mode-switch { bottom:100px; }
-  .planet-panel { bottom:145px; max-height:48vh; }
+  .planet-panel { top:100px; right:22px; bottom:auto; width:min(280px, calc(100vw - 44px)); max-height:min(32dvh, 220px); overflow-y:auto; overscroll-behavior:contain; padding:14px; border-radius:14px; }
+  #toggle-panel { right:34px; top:6px; font-size:20px; }
+  #close-panel { right:9px; top:6px; font-size:20px; }
+  .panel-heading { gap:11px; padding-right:50px; }
+  .planet-icon { width:42px; height:42px; }
+  h1 { font-size:20px; }
+  #planet-overview { font-size:11px; line-height:1.5; margin:12px 0; }
+  .stat { padding:9px 0; }
+  .fact { margin-top:12px; padding:10px; }
+  .planet-panel.minimized { top:auto; right:22px; bottom:100px; width:170px; padding:9px; }
+  .planet-panel.minimized #toggle-panel { top:50%; right:7px; }
   footer { left:22px; }
   footer span:not(.scale-note) { display:none; }
 }

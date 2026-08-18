@@ -190,14 +190,23 @@ function selectPlanet(p) {
   dir.y=.18; dir.normalize();
   const distance=Math.max(p.radius*7,18);
   startCameraTransition(world.clone().add(dir.multiplyScalar(distance)).add(new THREE.Vector3(0,p.radius*.35,0)),world,1.15);
-  populatePanel(p); panel.classList.add('open'); panel.setAttribute('aria-hidden','false');
+  populatePanel(p); setPanelMinimized(false); panel.classList.add('open'); panel.setAttribute('aria-hidden','false');
 }
 function deselect() {
   if (!selected) return;
   selected=null;
   BODIES.forEach(q=>{q.button.classList.remove('active'); if(q.orbitLine) { q.orbitLine.material.opacity=.28; q.orbitLine.material.color.set(0x445170); }});
-  panel.classList.remove('open'); panel.setAttribute('aria-hidden','true');
+  setPanelMinimized(false); panel.classList.remove('open'); panel.setAttribute('aria-hidden','true');
   startCameraTransition(savedView.position,savedView.target,1.3);
+}
+function setPanelMinimized(minimized) {
+  const toggle=document.querySelector('#toggle-panel');
+  panel.classList.toggle('minimized',minimized);
+  toggle.textContent=minimized?'＋':'−';
+  toggle.setAttribute('aria-expanded',String(!minimized));
+  toggle.setAttribute('aria-label',minimized?'Show planet details':'Minimize planet details');
+  toggle.title=minimized?'Show planet details':'Minimize planet details';
+  if (!minimized) panel.scrollTop=0;
 }
 function populatePanel(p) {
   document.querySelector('#planet-name').textContent=p.name;
@@ -219,6 +228,8 @@ function pick(event, isClick=false) {
 canvas.addEventListener('pointermove',e=>pick(e));
 canvas.addEventListener('click',e=>pick(e,true));
 document.querySelector('#close-panel').addEventListener('click',deselect);
+document.querySelector('#toggle-panel').addEventListener('click',e=>{e.stopPropagation(); setPanelMinimized(!panel.classList.contains('minimized'));});
+panel.addEventListener('click',()=>{if(panel.classList.contains('minimized')) setPanelMinimized(false);});
 
 document.querySelector('#play-pause').addEventListener('click',()=>{ playing=!playing; document.querySelector('#play-icon').textContent=playing?'Ⅱ':'▶'; document.querySelector('#play-label').textContent=playing?'PAUSE':'PLAY'; });
 document.querySelector('#reset').addEventListener('click',()=>{ simMs=Date.now(); orbitEpochMs=simMs; deselect(); if(!selected) startCameraTransition(OVERVIEW,new THREE.Vector3(),1.2); });
