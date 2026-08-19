@@ -15,7 +15,7 @@ button { cursor: pointer; }
 .brand strong { display:block; font-size: 13px; letter-spacing: .26em; }
 .brand small { display:block; color:#7f8ba6; font: 9px DM Mono; letter-spacing:.12em; margin-top:3px; text-transform:uppercase; }
 .time-readout { text-align:center; }
-.time-readout span, .select-wrap, .planet-nav>span { color:#79869f; font: 9px DM Mono; letter-spacing:.16em; }
+.time-readout span, .select-wrap, .planet-nav-heading>span { color:#79869f; font: 9px DM Mono; letter-spacing:.16em; }
 .time-readout time { display:block; margin-top: 4px; font: 13px DM Mono; letter-spacing:.06em; color:#dce5f7; }
 .controls { justify-self:end; display:flex; align-items:center; gap:8px; }
 .icon-button, .primary-button, select { border:1px solid rgba(166,187,230,.19); background:rgba(12,17,31,.75); border-radius:8px; height:38px; }
@@ -23,9 +23,14 @@ button { cursor: pointer; }
 .primary-button { padding:0 15px; display:flex; align-items:center; gap:8px; color:#07101f; background:#b9caf2; font:700 10px DM Mono; letter-spacing:.1em; }
 .select-wrap { display:flex; align-items:center; gap:7px; padding-left:9px; }
 select { padding:0 8px; outline:none; font:10px DM Mono; }
-.planet-nav { position:fixed; z-index:5; left:22px; top:108px; width:128px; padding:16px 12px; border-radius:14px; }
-.planet-nav>span { display:block; margin:0 0 9px 6px; }
+.planet-nav { position:fixed; z-index:5; left:22px; top:108px; width:128px; padding:12px; border-radius:14px; transition:width .25s ease, padding .25s ease; }
+.planet-nav-heading { min-height:20px; display:flex; align-items:center; justify-content:space-between; gap:8px; padding-left:6px; margin-bottom:9px; }
+#toggle-explore { width:20px; height:20px; flex:none; padding:0; border:0; border-radius:6px; background:transparent; color:#738099; font-size:18px; line-height:1; }
+#toggle-explore:hover, #toggle-explore:focus-visible { color:#fff; background:rgba(156,181,232,.11); outline:none; }
 #planet-buttons { display:flex; flex-direction:column; gap:3px; }
+.planet-nav.minimized { width:44px; padding:11px; }
+.planet-nav.minimized .planet-nav-heading { padding:0; margin:0; }
+.planet-nav.minimized .planet-nav-heading>span, .planet-nav.minimized #planet-buttons { display:none; }
 .planet-button { border:0; background:transparent; color:#8793aa; border-radius:8px; padding:8px 7px; text-align:left; font:500 10px DM Mono; letter-spacing:.05em; display:flex; gap:9px; align-items:center; transition:.2s; }
 .planet-button:hover, .planet-button.active { color:#fff; background:rgba(156,181,232,.11); }
 .planet-dot { width:8px; height:8px; border-radius:50%; flex:none; box-shadow:0 0 7px currentColor; }
@@ -70,7 +75,9 @@ footer { position:fixed; z-index:4; bottom:14px; left:170px; right:22px; display
   .select-wrap select { width:60px; height:34px; padding:0 4px; }
   .icon-button, .primary-button { height:34px; }
   .planet-nav { top:auto; bottom:42px; width:auto; right:22px; padding:8px; overflow-x:auto; }
-  .planet-nav>span { display:none; }
+  .planet-nav-heading { min-height:20px; padding:0; margin:0 0 4px; }
+  .planet-nav-heading>span { display:none; }
+  #toggle-explore { margin-left:auto; }
   #planet-buttons { flex-direction:row; }
   .planet-button { font-size:0; padding:8px; }
   .planet-dot { width:10px; height:10px; }
@@ -86,6 +93,7 @@ footer { position:fixed; z-index:4; bottom:14px; left:170px; right:22px; display
   .fact { margin-top:12px; padding:10px; }
   .planet-panel.minimized { top:auto; right:22px; bottom:100px; width:170px; padding:9px; }
   .planet-panel.minimized #toggle-panel { top:50%; right:7px; }
+  .planet-nav.minimized { width:40px; padding:9px; right:auto; overflow:visible; }
   footer { left:22px; }
   footer span:not(.scale-note) { display:none; }
 }

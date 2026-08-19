@@ -196,6 +196,17 @@ PLANETS.forEach((p,index) => {
 const nav=document.querySelector('#planet-buttons');
 BODIES.forEach(p => { const b=document.createElement('button'); b.className='planet-button'; b.innerHTML=`<i class="planet-dot" style="background:${p.color};color:${p.color}"></i>${p.name.toUpperCase()}`; b.addEventListener('click',()=>selectPlanet(p)); nav.appendChild(b); p.button=b; });
 
+const explorePanel=document.querySelector('.planet-nav');
+const exploreToggle=document.querySelector('#toggle-explore');
+function setExploreMinimized(minimized) {
+  explorePanel.classList.toggle('minimized',minimized);
+  exploreToggle.textContent=minimized?'＋':'−';
+  exploreToggle.setAttribute('aria-expanded',String(!minimized));
+  exploreToggle.setAttribute('aria-label',minimized?'Show explore panel':'Minimize explore panel');
+  exploreToggle.title=minimized?'Show explore panel':'Minimize explore panel';
+}
+exploreToggle.addEventListener('click',()=>setExploreMinimized(!explorePanel.classList.contains('minimized')));
+
 let playing=true, speed=60, simMs=Date.now(), orbitEpochMs=simMs, selected=null, cameraMode='cinematic';
 let transition=null, hover=null;
 const clock=new THREE.Clock(), raycaster=new THREE.Raycaster(), pointer=new THREE.Vector2();
