@@ -37,6 +37,14 @@ select { padding:0 8px; outline:none; font:10px DM Mono; }
 .mode-switch { position:fixed; z-index:5; left:22px; bottom:42px; padding:4px; border-radius:9px; display:flex; }
 .mode { background:transparent; border:0; border-radius:6px; padding:8px 12px; color:#71809a; font:9px DM Mono; letter-spacing:.1em; }
 .mode.active { background:#bed0f7; color:#08101f; }
+.flight-controls, .flight-look-control, .flight-reticle { display:none; }
+.flight-reticle { position:fixed; z-index:4; left:50%; top:50%; width:18px; height:18px; transform:translate(-50%,-50%); pointer-events:none; }
+.flight-reticle:before, .flight-reticle:after { content:''; position:absolute; background:rgba(220,231,255,.72); box-shadow:0 0 5px rgba(126,169,255,.45); }
+.flight-reticle:before { width:18px; height:1px; top:8px; left:0; }
+.flight-reticle:after { width:1px; height:18px; top:0; left:8px; }
+.free-roam-active #scene { cursor:crosshair !important; touch-action:none; }
+.free-roam-active .flight-reticle { display:block; }
+.free-roam-active .planet-nav, .free-roam-active .planet-panel { visibility:hidden; }
 .planet-panel { position:fixed; z-index:6; right:22px; bottom:52px; width:min(355px, calc(100vw - 44px)); max-height:calc(100vh - 165px); overflow:auto; border-radius:18px; padding:22px; transform:translateX(calc(100% + 40px)); opacity:0; transition:transform .45s cubic-bezier(.2,.8,.2,1), opacity .35s; pointer-events:none; }
 .planet-panel.open { transform:translateX(0); opacity:1; pointer-events:auto; }
 #toggle-panel { position:absolute; top:12px; right:14px; border:0; background:transparent; color:#738099; font-size:23px; line-height:1; }
@@ -82,6 +90,7 @@ footer { position:fixed; z-index:4; bottom:14px; left:170px; right:22px; display
   .planet-button { font-size:0; padding:8px; }
   .planet-dot { width:10px; height:10px; }
   .mode-switch { bottom:100px; }
+  .mode { padding:8px 9px; }
   .planet-panel { top:auto; right:22px; bottom:100px; width:min(280px, calc(100vw - 44px)); max-height:min(32dvh, 220px); overflow-y:auto; overscroll-behavior:contain; padding:14px; border-radius:14px; }
   #toggle-panel { right:9px; top:6px; font-size:20px; }
   #back { margin-bottom:10px; }
@@ -96,6 +105,22 @@ footer { position:fixed; z-index:4; bottom:14px; left:170px; right:22px; display
   .planet-nav.minimized { width:40px; padding:9px; right:auto; overflow:visible; }
   footer { left:22px; }
   footer span:not(.scale-note) { display:none; }
+}
+@media (hover:none), (pointer:coarse) {
+  .free-roam-active .flight-controls { position:fixed; z-index:8; right:22px; bottom:36px; width:132px; height:132px; display:grid; grid-template:repeat(3, 1fr)/repeat(3, 1fr); gap:5px; }
+  .free-roam-active .flight-look-control { position:fixed; z-index:8; left:22px; bottom:46px; width:112px; height:112px; display:flex; align-items:center; justify-content:center; border:1px solid rgba(184,205,246,.28); border-radius:50%; background:radial-gradient(circle,rgba(95,124,181,.2),rgba(10,16,31,.72)); color:#dce6fb; backdrop-filter:blur(12px); touch-action:none; user-select:none; }
+  .flight-look-control:before { content:''; position:absolute; inset:17px; border:1px solid rgba(184,205,246,.18); border-radius:50%; }
+  .flight-look-control.active { background:radial-gradient(circle,rgba(190,208,247,.3),rgba(24,35,59,.84)); border-color:rgba(210,225,255,.55); }
+  .flight-look-mark { font:30px DM Mono; line-height:1; }
+  .flight-look-label { position:absolute; bottom:12px; font:8px DM Mono; letter-spacing:.16em; color:#91a2c1; }
+  .flight-control { border:1px solid rgba(184,205,246,.28); border-radius:12px; background:rgba(10,16,31,.72); color:#dce6fb; font:22px DM Mono; backdrop-filter:blur(12px); touch-action:none; }
+  .flight-control:active { background:#bed0f7; color:#08101f; }
+  .flight-forward { grid-area:1/2; }
+  .flight-left { grid-area:2/1; }
+  .flight-back { grid-area:2/2; }
+  .flight-right { grid-area:2/3; }
+  .free-roam-active .mode-switch { left:22px; bottom:180px; }
+  .free-roam-active footer { display:none; }
 }
 @media (max-width: 420px) {
   .brand { gap:8px; }

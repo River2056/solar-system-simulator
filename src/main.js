@@ -4,6 +4,7 @@ import { orbitalAngle, orbitalPosition, advanceSimulation } from './orbits.js';
 import { MOONS_BY_PLANET, moonAngularVelocity, advanceSynchronousMoon } from './moons.js';
 import { MOON_APPEARANCES, createMoonTexture, createMoonGeometry, createMoonMaterial } from './moon-visuals.js';
 import { updateTrackedCamera } from './camera.js';
+import { FreeRoamController } from './free-roam.js';
 import { orientPlanet, advancePlanetRotation } from './planet-rotation.js';
 import './style.css';
 
@@ -54,6 +55,7 @@ controls.dampingFactor = .055;
 controls.minDistance = 8;
 controls.maxDistance = 360;
 controls.target.set(0,0,0);
+const freeRoam=new FreeRoamController(camera,canvas,document.querySelector('.flight-controls'),document.querySelector('.flight-look-control'));
 
 scene.add(new THREE.AmbientLight(0x435477, .2));
 scene.add(new THREE.HemisphereLight(0xb8ceff,0x080a10,.3));
@@ -227,12 +229,12 @@ function selectPlanet(p) {
   startCameraTransition(world.clone().add(dir.multiplyScalar(distance)).add(new THREE.Vector3(0,p.radius*.35,0)),world,1.15);
   populatePanel(p); setPanelMinimized(true); panel.classList.add('open'); panel.setAttribute('aria-hidden','false');
 }
-function deselect() {
+function deselect(restoreView=true) {
   if (!selected) return;
   selected=null;
   BODIES.forEach(q=>{q.button.classList.remove('active'); if(q.orbitLine) { q.orbitLine.material.opacity=.28; q.orbitLine.material.color.set(0x445170); }});
   setPanelMinimized(false); panel.classList.remove('open'); panel.setAttribute('aria-hidden','true');
-  startCameraTransition(savedView.position,savedView.target,1.3);
+  if(restoreView) startCameraTransition(savedView.position,savedView.target,1.3);
 }
 function setPanelMinimized(minimized) {
   const toggle=document.querySelector('#toggle-panel');
@@ -254,6 +256,7 @@ function populatePanel(p) {
 }
 
 function pick(event, isClick=false) {
+  if(cameraMode==='free-roam') return;
   const r=canvas.getBoundingClientRect(); pointer.x=((event.clientX-r.left)/r.width)*2-1; pointer.y=-((event.clientY-r.top)/r.height)*2+1;
   raycaster.setFromCamera(pointer,camera); const hit=raycaster.intersectObjects(clickable,false)[0]; const p=hit?.object.userData.planet || null;
   if (isClick) { if (p) selectPlanet(p); return; }
@@ -267,9 +270,36 @@ document.querySelector('#toggle-panel').addEventListener('click',e=>{e.stopPropa
 panel.addEventListener('click',()=>{if(panel.classList.contains('minimized')) setPanelMinimized(false);});
 
 document.querySelector('#play-pause').addEventListener('click',()=>{ playing=!playing; document.querySelector('#play-icon').textContent=playing?'Ⅱ':'▶'; document.querySelector('#play-label').textContent=playing?'PAUSE':'PLAY'; });
-document.querySelector('#reset').addEventListener('click',()=>{ simMs=Date.now(); orbitEpochMs=simMs; deselect(); if(!selected) startCameraTransition(OVERVIEW,new THREE.Vector3(),1.2); });
+document.querySelector('#reset').addEventListener('click',()=>{ simMs=Date.now(); orbitEpochMs=simMs; if(cameraMode==='free-roam') enterFreeRoam(PLANETS.find(p=>p.name==='Earth')); else { deselect(); if(!selected) startCameraTransition(OVERVIEW,new THREE.Vector3(),1.2); } });
 document.querySelector('#speed').addEventListener('change',e=>{speed=Number(e.target.value); document.querySelector('.scale-note').textContent=`TIME ${speed.toLocaleString()}× · SIZES & DISTANCES VISUALLY ADJUSTED — NOT TO SCALE`;});
-document.querySelectorAll('.mode').forEach(b=>b.addEventListener('click',()=>{ cameraMode=b.dataset.mode; document.querySelectorAll('.mode').forEach(x=>x.classList.toggle('active',x===b)); }));
+
+function enterFreeRoam(body=selected||PLANETS.find(p=>p.name==='Earth')) {
+  const target=new THREE.Vector3();
+  body.group.getWorldPosition(target);
+  const direction=camera.position.clone().sub(target);
+  if(direction.lengthSq()<.001) direction.set(1,.35,1);
+  const spawn=target.clone().add(direction.normalize().multiplyScalar(body.radius*3));
+  transition=null;
+  deselect(false);
+  freeRoam.enter(spawn,target);
+}
+
+function setCameraMode(mode) {
+  if(mode===cameraMode) return;
+  if(mode==='free-roam') {
+    enterFreeRoam();
+  } else if(freeRoam.active) {
+    const forward=new THREE.Vector3(0,0,-1).applyQuaternion(camera.quaternion);
+    controls.target.copy(camera.position).addScaledVector(forward,20);
+    freeRoam.exit();
+  }
+  cameraMode=mode;
+  document.querySelectorAll('.mode').forEach(button=>button.classList.toggle('active',button.dataset.mode===mode));
+  document.querySelector('#camera-hint').innerHTML=mode==='free-roam'?'<i class="mouse-icon">↔</i> MOVE MOUSE TO LOOK':'<i class="mouse-icon">↔</i> DRAG TO ORBIT';
+  document.querySelector('#movement-hint').textContent=mode==='free-roam'?'WASD TO FLY · SHIFT TO BOOST':'SCROLL TO ZOOM';
+}
+
+document.querySelectorAll('.mode').forEach(button=>button.addEventListener('click',()=>setCameraMode(button.dataset.mode)));
 
 function animate() {
   requestAnimationFrame(animate);
@@ -306,8 +336,13 @@ function animate() {
     const offset=camera.position.clone().sub(controls.target); offset.applyAxisAngle(new THREE.Vector3(0,1,0),dt*.055);
     camera.position.copy(target).add(offset); controls.target.lerp(target,1-Math.exp(-dt*4));
   }
-  controls.enabled=!transition;
-  controls.update();
+  controls.enabled=!transition&&cameraMode!=='free-roam';
+  if(cameraMode==='free-roam') {
+    const obstacles=BODIES.map(body=>{const center=new THREE.Vector3(); body.group.getWorldPosition(center); return {center,radius:body.radius};});
+    freeRoam.update(dt,obstacles);
+  } else {
+    controls.update();
+  }
   document.querySelector('#sim-time').textContent=new Date(simMs).toLocaleString(undefined,{year:'numeric',month:'short',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'}).toUpperCase();
   renderer.render(scene,camera);
 }
